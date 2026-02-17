@@ -5,17 +5,28 @@ import EditProject from './components/EditProject';
 import NoProject from './components/NoProject';
 import SelectedProject from './components/SelectedProject';
 import { v4 as uuidv4 } from 'uuid';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
-  const [projectState, setProjectState] = useState({
-    selectedProjectId: undefined,
-    editingProjectId: undefined,
-    projects: [],
-    tasks: []
+  const [projectState, setProjectState] = useState(() => {
+    const savedState = localStorage.getItem('projectManagerState');
+    if (savedState) {
+      return JSON.parse(savedState);
+    }
+    return {
+      selectedProjectId: undefined,
+      editingProjectId: undefined,
+      projects: [],
+      tasks: []
+    };
   });
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Save to localStorage whenever projectState changes
+  useEffect(() => {
+    localStorage.setItem('projectManagerState', JSON.stringify(projectState));
+  }, [projectState]);
 
   function handleAddTask(text) {
     setProjectState(prevState => {
